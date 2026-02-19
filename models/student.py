@@ -1,0 +1,68 @@
+from extensions import db
+from flask_login import UserMixin
+from datetime import datetime
+
+class Student(UserMixin, db.Model):
+    __tablename__ = "students"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    
+    # Personal Details
+    phone = db.Column(db.String(20))
+    branch = db.Column(db.String(50))
+    semester = db.Column(db.Integer)
+    enrollment_no = db.Column(db.String(50), unique=True)
+    
+    # Academic Details
+    cgpa = db.Column(db.Float, default=0.0)
+    tenth_percentage = db.Column(db.Float)
+    twelfth_percentage = db.Column(db.Float)
+    graduation_year = db.Column(db.Integer)
+    backlog = db.Column(db.Integer, default=0)
+    
+    # Professional Details
+    resume_url = db.Column(db.String(500))
+    linkedin_url = db.Column(db.String(200))
+    github_url = db.Column(db.String(200))
+    leetcode_url = db.Column(db.String(200))  # Fixed from lectcode_url
+    
+    # Status
+    is_placed = db.Column(db.Boolean, default=False)
+    placed_company = db.Column(db.String(100))
+    placed_package = db.Column(db.Float)
+    
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    skills = db.relationship('StudentSkill', backref='student', lazy=True, cascade='all, delete-orphan')
+    applications = db.relationship('Application', backref='student', lazy=True, cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f"<Student {self.email}>"
+    
+    def get_skill_match_percentage(self, company_id):
+        """Calculate skill match percentage for a specific company"""
+        from models.skills import CompanySkill
+        
+        student_skills = {skill.skill_name.lower() for skill in self.skills}
+        company_skills = {skill.required_skill.lower() for skill in CompanySkill.query.filter_by(company_id=company_id).all()}
+        
+        if not company_skills:
+            return 0
+        
+        matching_skills = student_skills.intersection(company_skills)
+        return (len(matching_skills) / len(company_skills)) * 100
+    
+    def get_missing_skills(self, company_id):
+        """Get missing skills for a specific company"""
+        from models.skills import CompanySkill
+        
+        student_skills = {skill.skill_name.lower() for skill in self.skills}
+        company_skills = {skill.required_skill.lower() for skill in CompanySkill.query.filter_by(company_id=company_id).all()}
+        
+        return list(company_skills - student_skills)

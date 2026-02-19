@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to <span class="gradient-text">HireInsight</span></h1>
+        <p class="hero-subtitle">Intelligent Placement Management System with Advanced Analytics & Skill Gap Analysis</p>
+        
+        {% if not current_user.is_authenticated %}
+        <div class="hero-buttons">
+            <a href="/register" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Get Started
+            </a>
+            <a href="/login" class="btn btn-secondary">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        </div>
+        {% else %}
+        <div class="hero-buttons">
+            <a href="/dashboard" class="btn btn-primary">
+                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="features-section">
+        <div class="feature-card">
+            <i class="fas fa-shield-alt feature-icon"></i>
+            <h3>Secure Access</h3>
+            <p>Role-based authentication with advanced security features</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-chart-line feature-icon"></i>
+            <h3>Analytics Dashboard</h3>
+            <p>Real-time placement statistics and insights</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-brain feature-icon"></i>
+            <h3>Skill Gap Analysis</h3>
+            <p>AI-powered skill matching and recommendations</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-ban feature-icon"></i>
+            <h3>Duplicate Detection</h3>
+            <p>Prevent multiple applications automatically</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
